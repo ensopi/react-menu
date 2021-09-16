@@ -21,6 +21,7 @@ export const SettingsContext = React.createContext({});
 export const ItemSettingsContext = React.createContext({});
 
 export const Keys = Object.freeze({
+    'TAB': 'Tab',
     'ENTER': 'Enter',
     'ESC': 'Escape',
     'SPACE': ' ',

@@ -1,4 +1,4 @@
-import React, { memo, useContext, useMemo, useRef } from 'react';
+import React, { memo, useContext, useMemo, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
     useBEM,
@@ -34,6 +34,8 @@ export const MenuItem = withHovering(memo(function MenuItem({
     onClick,
     isHovering,
     externalRef,
+    skipNavigationKeys = false,
+    navigationEvent,
     ...restProps
 }) {
     const isDisabled = Boolean(disabled);
@@ -57,6 +59,16 @@ export const MenuItem = withHovering(memo(function MenuItem({
     const isChecked = isRadio
         ? radioGroup.value === value
         : (isCheckBox ? Boolean(checked) : false);
+
+    useEffect(() => {
+        if (!isHovering) return;
+
+        switch (navigationEvent) {
+            case Keys.TAB:
+            case Keys.ENTER:
+                ref.current.click();
+        }
+    }, [isHovering, navigationEvent])
 
     const handleClick = e => {
         if (isDisabled) return;
@@ -119,13 +131,13 @@ export const MenuItem = withHovering(memo(function MenuItem({
     // 1. Preset props adhering to WAI-ARIA Authoring Practices.
     // 2. restProps(consuming code overriding)
     // 3. handlers (with consuming code handlers hooked)
-    // 4. ref, className, and styles (style prop is overriden, consuming code should 
+    // 4. ref, className, and styles (style prop is overriden, consuming code should
     //    use the styles prop instead)
     const menuItemProps = {
         role: isRadio ? 'menuitemradio' : (isCheckBox ? 'menuitemcheckbox' : 'menuitem'),
         'aria-checked': (isRadio || isCheckBox) ? isChecked : undefined,
         'aria-disabled': isDisabled || undefined,
-        tabIndex: isHovering ? 0 : -1,
+        tabIndex: skipNavigationKeys ? undefined : isHovering ? 0 : -1, // remove in order to support controlled key navigation
         ...restProps,
         ...handlers,
         ref: useCombinedRef(externalRef, ref),

@@ -41,6 +41,9 @@ export const ControlledMenu = forwardRef(function ControlledMenu({
     theming,
     onItemClick,
     onClose,
+    skipNavigationKeys = false,
+    navigationEvent,
+    navigationEventTimeStamp,
     ...restProps
 }, externalRef) {
 
@@ -150,6 +153,9 @@ export const ControlledMenu = forwardRef(function ControlledMenu({
                                 ariaLabel={ariaLabel || 'Menu'}
                                 externalRef={externalRef}
                                 containerRef={containerRef}
+                                skipNavigationKeys={skipNavigationKeys}
+                                navigationEvent={navigationEvent}
+                                navigationEventTimeStamp={navigationEventTimeStamp}
                                 onClose={onClose} />
                         </EventHandlersContext.Provider>
                     </ItemSettingsContext.Provider>
@@ -177,7 +183,8 @@ ControlledMenu.propTypes = {
     menuItemFocus: PropTypes.exact({
         position: PropTypes.string
     }),
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    skipNavigationKeys: PropTypes.bool,
 };
 
 ControlledMenu.defaultProps = {

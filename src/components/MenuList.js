@@ -69,6 +69,9 @@ export const MenuList = ({
     offsetY,
     children,
     onClose,
+    skipNavigationKeys,
+    navigationEvent,
+    navigationEventTimeStamp,
     ...restProps
 }) => {
     const isOpen = isMenuOpen(menuState);
@@ -156,6 +159,27 @@ export const MenuList = ({
         return items;
     }, [children]);
 
+    useEffect(() => {
+        switch (navigationEvent) {
+            case Keys.HOME:
+                dispatch({ type: HoverIndexActionTypes.FIRST });
+                break;
+
+            case Keys.END:
+                dispatch({ type: HoverIndexActionTypes.LAST });
+                break;
+
+            case Keys.UP:
+                dispatch({ type: HoverIndexActionTypes.DECREASE });
+                break;
+
+            case Keys.DOWN:
+                dispatch({ type: HoverIndexActionTypes.INCREASE });
+                break;
+
+        }
+    }, [navigationEvent, navigationEventTimeStamp]);
+
     const handleKeyDown = e => {
         let handled = false;
 
@@ -182,7 +206,7 @@ export const MenuList = ({
 
             // prevent browser from scrolling the page when SPACE is pressed
             case Keys.SPACE:
-                // Don't preventDefault on children of FocusableItem 
+                // Don't preventDefault on children of FocusableItem
                 if (e.target && e.target.className.includes(menuClass)) {
                     e.preventDefault();
                 }
@@ -314,7 +338,7 @@ export const MenuList = ({
         if (anchorScroll !== menuScroll && scroll === 'initial') scroll = 'auto';
         if (scroll === 'initial') return;
 
-        // For best user experience, 
+        // For best user experience,
         // force to close menu in the following setting combination
         if (scroll === 'auto' && overflow !== 'visible') scroll = 'close';
 
@@ -391,7 +415,7 @@ export const MenuList = ({
             // this happens in some edge cases because of the timeout delay.
             if (!isOpen || !menuRef.current || menuRef.current.contains(document.activeElement)) return;
             if (captureFocus) menuRef.current.focus();
-            if (menuItemFocus.position === FocusPositions.FIRST) {
+            if (menuItemFocus.position === FocusPositions.FIRST && hoverIndex === -1) {
                 dispatch({ type: HoverIndexActionTypes.FIRST });
             } else if (menuItemFocus.position === FocusPositions.LAST) {
                 dispatch({ type: HoverIndexActionTypes.LAST });
@@ -438,7 +462,7 @@ export const MenuList = ({
     const _arrowStyles = useFlatStyles(arrowStyles, arrowModifiers);
 
     const handlers = attachHandlerProps({
-        onKeyDown: handleKeyDown,
+        onKeyDown: skipNavigationKeys ? undefined : handleKeyDown,
         onAnimationEnd: handleAnimationEnd
     }, restProps);
 

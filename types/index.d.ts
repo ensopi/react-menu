@@ -181,6 +181,9 @@ export interface ControlledMenuProps extends BaseMenuProps {
     menuItemFocus?: {
         position: FocusPosition
     };
+    skipNavigationKeys?: boolean;
+    navigationEvent?: string;
+    navigationEventTimeStamp?: number;
     onClose?: EventHandler<MenuCloseEvent>;
 }
 
@@ -225,6 +228,8 @@ export interface MenuItemProps extends Omit<BaseProps<MenuItemModifiers>, 'onCli
     checked?: boolean;
     onClick?: EventHandler<ClickEvent>;
     children?: RenderProp<MenuItemModifiers>;
+    skipNavigationKeys?: boolean;
+    navigationEvent?: string;
 }
 
 export const MenuItem: React.NamedExoticComponent<MenuItemProps>;

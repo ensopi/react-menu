@@ -42,6 +42,8 @@ import {
     SubmenuActionTypes
 } from '../utils';
 
+const SCROLL_UP_THRESHOLD = 8;
+const SCROLL_DOWN_THRESHOLD = 16;
 
 export const MenuList = ({
     ariaLabel,
@@ -70,6 +72,7 @@ export const MenuList = ({
     children,
     onClose,
     skipNavigationKeys,
+    scrollTopOffset,
     navigationEvent,
     navigationEventTimeStamp,
     ...restProps
@@ -424,6 +427,27 @@ export const MenuList = ({
 
         return () => clearTimeout(id);
     }, [openTransition, closeTransition, captureFocus, isOpen, menuItemFocus]);
+
+    useEffect(() => {
+        if (skipNavigationKeys && hoverIndex >= 0) {
+            const element = document.getElementsByClassName('szh-menu__item')[hoverIndex];
+
+            const scrollTop = menuRef?.current?.scrollTop || 0;
+            const scrollClientHeight = menuRef?.current?.clientHeight || 0;
+
+            const bounding = element && element.getBoundingClientRect();
+            const downThreshold = (bounding ? bounding.height : 0) + SCROLL_DOWN_THRESHOLD;
+            const bottomPositionCutoff = scrollClientHeight - downThreshold;
+
+            if (element && element.offsetTop - SCROLL_UP_THRESHOLD <= scrollTop) {
+                const newScrollTop = element.offsetTop - SCROLL_UP_THRESHOLD;
+                menuRef?.current?.scrollTo(0, newScrollTop);
+            } else if (bounding && bounding.top - scrollTopOffset >= bottomPositionCutoff) {
+                const newScrollTop = bounding.top - scrollTopOffset - scrollClientHeight + scrollTop + downThreshold;
+                menuRef?.current?.scrollTo(0, newScrollTop);
+            }
+        }
+    }, [skipNavigationKeys, scrollTopOffset, hoverIndex, menuRef])
 
     const isSubmenuOpen = openSubmenuCount > 0;
     const itemContext = useMemo(() => ({

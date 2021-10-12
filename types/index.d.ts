@@ -181,6 +181,7 @@ export interface ControlledMenuProps extends BaseMenuProps {
     menuItemFocus?: {
         position: FocusPosition
     };
+    scrollTopOffset?: number;
     skipNavigationKeys?: boolean;
     navigationEvent?: string;
     navigationEventTimeStamp?: number;
